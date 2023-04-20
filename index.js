@@ -1,6 +1,6 @@
 //const NUMBER_OF_INTEGERS = [8000, 16000, 32000, 64000, 128000];
 //const NUMBER_OF_STRINGS = [2000, 4000, 8000, 16000, 32000];
-const NUMBER_OF_INTEGERS = [8000, 16000];
+const NUMBER_OF_INTEGERS = [8000, 16000, 32000];
 const NUMBER_OF_STRINGS = [2000];
 
 function App() {
@@ -46,7 +46,7 @@ function App() {
 
   const calculateExecutionTime = (arr, myFunction) => {
     const startTime = new Date().getTime();
-    myFunction(arr);
+    myFunction(...arr);
     const endTime = new Date().getTime();
     return endTime - startTime;
   };
@@ -55,28 +55,28 @@ function App() {
 
   const shellSortIntegersMethod = (arr) => {
     const n = arr.length;
-  let gap = Math.floor(n / 2);
+    let gap = Math.floor(n / 2);
 
-  while (gap > 0) {
-    for (let i = gap; i < n; i++) {
-      const temp = arr[i];
-      let j;
+    while (gap > 0) {
+      for (let i = gap; i < n; i++) {
+        const temp = arr[i];
+        let j;
 
-      for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
-        arr[j] = arr[j - gap];
+        for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+          arr[j] = arr[j - gap];
+        }
+
+        arr[j] = temp;
       }
 
-      arr[j] = temp;
+      gap = Math.floor(gap / 2);
     }
 
-    gap = Math.floor(gap / 2);
-  }
-
-  console.log(arr);
-  if (!check_if_sorted(arr)) {
-      console.error("NOT SORTED!!!");
-    }
-    return arr;
+    console.log(arr);
+    if (!check_if_sorted(arr)) {
+        console.error("NOT SORTED!!!");
+      }
+      return arr;
   };
 
   const shellSort2IntegersMethod = (array) => {
@@ -84,7 +84,7 @@ function App() {
     return array;
   }
   const quickSortIntegersMethod = (array) => {
-    let left = 0;
+    /* let left = 0;
     let right = array.length - 1;
     quickSort(array, left, right);
     function quickSort(arr, left, right) {
@@ -110,17 +110,87 @@ function App() {
 
       [arr[right], arr[pivotIndex]] = [arr[pivotIndex], arr[right]];
       return pivotIndex;
+    } */
+    if (array.length <= 1) {
+      return array;
     }
+    
+    const pivot = array[0];
+    const left = [];
+    const right = [];
+    
+    for (let i = 1; i < array.length; i++) {
+      if (array[i] < pivot) {
+        left.push(array[i]);
+      } else {
+        right.push(array[i]);
+      }
+    }
+  
+    return [...quickSortIntegersMethod(left), pivot, ...quickSortIntegersMethod(right)];
   };
 
-  const quickSort2IntegersMethod = (array) => {
+  const quickSort2IntegersMethod = (array, left, right) => {
 
-    return array;
+    if (left >= right) {
+      return 0;
+    }
+    
+    const pivot = array[right];
+    let i = left;
+    let j = right - 1;
+    
+    while (i <= j) {
+      while (i <= j && array[i] < pivot) {
+        i++;
+      }
+      while (i <= j && array[j] > pivot) {
+        j--;
+      }
+      if (i <= j) {
+        [array[i], array[j]] = [array[j], array[i]];
+        i++;
+        j--;
+      }
+    }
+    
+    [array[i], array[right]] = [array[right], array[i]];
+    
+    quickSort2IntegersMethod(array, left, i - 1);
+    quickSort2IntegersMethod(array, i + 1, right);
   }
 
-  const quickSort3IntegersMethod = (array) => {
+  const quickSort3IntegersMethod = (array, threshold) => {
 
+    if (array.length <= 1) {
     return array;
+  }
+  
+  const pivot = array[0];
+  let left = [];
+  let right = [];
+  
+  for (let i = 1; i < array.length; i++) {
+    if (array[i] < pivot) {
+      left.push(array[i]);
+    } else {
+      right.push(array[i]);
+    }
+  }
+  
+  if (left.length < threshold) {
+    left = quickSort3IntegersMethod(left);
+  } else {
+    left = quickSort3IntegersMethod(left, threshold);
+  }
+  
+  if (right.length < threshold) {
+    right = quickSort3IntegersMethod(right);
+  } else {
+    right = quickSort3IntegersMethod(right, threshold);
+  }
+  
+  return [...left, pivot, ...right];
   }
 
   const quickSortInsertionIntegersMethod = (arr) => {
@@ -192,11 +262,86 @@ function App() {
     }
   };
 
-  const quickSortStringsMethod = (arr) => {
-    if (!check_if_sorted(arr)) {
-      console.error("NOT SORTED!!!");
+  const quickSortStringsMethod = (array) => {
+if (array.length <= 1) {
+    return array;
+  }
+  
+  const pivot = array[0];
+  const left = [];
+  const right = [];
+  
+  for (let i = 1; i < array.length; i++) {
+    if (array[i] < pivot) {
+      left.push(array[i]);
+    } else {
+      right.push(array[i]);
     }
+  }
+  
+  if (!check_if_sorted(array)) {
+    console.error("NOT SORTED!!!");
+  }
+  return [...quickSortStringsMethod(left), pivot, ...quickSortStringsMethod(right)];
+    
   };
+
+  const quickSort2StringsMethod = (array, left, right) => {
+
+    if (left >= right) {
+    return;
+  }
+  
+  const pivot = array[right];
+  let i = left;
+  let j = right - 1;
+  
+  while (i <= j) {
+    while (i <= j && array[i] < pivot) {
+      i++;
+    }
+    while (i <= j && array[j] > pivot) {
+      j--;
+    }
+    if (i <= j) {
+      [array[i], array[j]] = [array[j], array[i]];
+      i++;
+      j--;
+    }
+  }
+  
+  [array[i], array[right]] = [array[right], array[i]];
+  
+  quickSort2StringsMethod(array, left, i - 1);
+  quickSort2StringsMethod(array, i + 1, right);
+  }
+
+  const quickSort3StringsMethod = (array) => {
+
+    if (array.length <= 1) {
+    return array;
+  }
+  
+  const pivot = array[0].toLowerCase();
+  const left = [];
+  const right = [];
+  
+  for (let i = 1; i < array.length; i++) {
+    if (array[i].toLowerCase() < pivot) {
+      left.push(array[i]);
+    } else {
+      right.push(array[i]);
+    }
+  }
+  
+  return [...quickSort3StringsMethod(left), array[0], ...quickSort3StringsMethod(right)];
+  
+  }
+
+  const shellSort2StringsMethod = (array) => {
+
+    return array;
+  }
 
   const shellQuickSortStringsMethod = (arr) => {
     let left = 0;
@@ -269,38 +414,38 @@ function App() {
       // shell / sort / quickSort
       // quick sort 1
       quickSortIntegerMethodResults.push(
-        calculateExecutionTime(arr, quickSortIntegersMethod)
+        calculateExecutionTime([arr], quickSortIntegersMethod)
       );
 
       setQuickSortIntegers(quickSortIntegerMethodResults);
       // quick sort 2
       quickSort2IntegersMethodResults.push(
-        calculateExecutionTime(arr, quickSort2IntegersMethod)
+        calculateExecutionTime([arr, 0, arr.length-1], quickSort2IntegersMethod)
       );
 
       setQuickSortIntegers2(quickSort2IntegersMethodResults);
 
       // quick sort 3
       quickSort3IntegersMethodResults.push(
-        calculateExecutionTime(arr, quickSort3IntegersMethod)
+        calculateExecutionTime([arr, 1000], quickSort3IntegersMethod)
       );
       setQuickSortInteger3(quickSort3IntegersMethodResults);
 
       // quick sort + ins
       quickSortInsertionIntegerMethodResults.push(
-        calculateExecutionTime(arr, quickSortInsertionIntegersMethod)
+        calculateExecutionTime([arr], quickSortInsertionIntegersMethod)
       );
       setShellQuickSortIntegers(quickSortInsertionIntegerMethodResults)
 
       // shell sort 1
       shellSortIntegersResults.push(
-        calculateExecutionTime(arr, shellSortIntegersMethod)
+        calculateExecutionTime([arr], shellSortIntegersMethod)
       );
       setShellSortIntegers(shellSortIntegersResults);
 
       // shell sort 2
       shellSort2IntegerResults.push(
-        calculateExecutionTime(arr, shellSort2IntegersMethod)
+        calculateExecutionTime([arr], shellSort2IntegersMethod)
       );
       setShellSortIntegers2(shellSort2IntegerResults);
     });
@@ -309,7 +454,8 @@ function App() {
 
   const sortForStrings = () => {
     console.log("method called");
-    //setIsLoadingStrings(true);
+    
+    
     let quickSortStringsMethodResults = [];
     let quickSort2StringsMethodResults = [];
     let quickSort3StringsMethodResults = [];
@@ -322,16 +468,16 @@ function App() {
       quickSortStringsMethodResults.push(
         calculateExecutionTime(strings, quickSortStringsMethod)
       );
-      setQuickSortStrings(quickSortStringsMethodResults)
+      setQuickSortStrings(quickSortStringsMethodResults);
       //quick sort 2
       quickSort2StringsMethodResults.push(
-        calculateExecutionTime(strings, )
+        calculateExecutionTime(strings, quickSort2StringsMethod)
       );
       setQuickSortStrings2(quickSort2StringsMethodResults);
 
       //quick sort 3
       quickSort3StringsMethodResults.push(
-        calculateExecutionTime(strings, )
+        calculateExecutionTime(strings, quickSort3StringsMethod)
       );
       setQuickSortStrings3(quickSort3StringsMethodResults);
 
@@ -342,17 +488,17 @@ function App() {
       setQuickSortInsertionStrings(quickSortInsertionStringsMethodResults);
 
       //shell sort 1
-        shellSortStringsResults.push(
+      shellSortStringsResults.push(
         calculateExecutionTime(strings, shellQuickSortStringsMethod)
       );
+      setShellSortStrings(shellSortStringsResults);
 
       //shell sort 2
       shellSort2StringsResults.push(
-        calculateExecutionTime(strings, )
+        calculateExecutionTime(strings, shellSort2StringsMethod)
         );
-        
+      setShellSortStrings2(shellSort2StringsResults);
       });
-    //setIsLoadingStrings(false);
     
   };
 
@@ -394,16 +540,6 @@ function App() {
 
       <h2>For Strings :</h2>
       <button onClick={sortForStrings}>Sort Strings in All methods :</button>
-      <h4>Shell Sort Method : </h4>
-      <p>shell sort Method Resuts: </p>
-      {shellSortStrings.map((result, index) => (
-        <li key={index}>{result} ms</li>
-      ))}
-      <h4>Shell Sort 2 Method : </h4>
-      <p>shell sort 2 Method Resuts: </p>
-      {shellSortStrings2.map((result, index) => (
-        <li key={index}>{result} ms</li>
-      ))}
       <h4>Quick Sort Method : </h4>
       <p>quick sort Method Resuts: </p>
       {quickSortStrings.map((result, index) => (
@@ -414,9 +550,24 @@ function App() {
       {quickSortStrings2.map((result, index) => (
         <li key={index}>{result} ms</li>
       ))}
-      <h4>Shell Quick Sort Method : </h4>
-      <p>shell quick Method Resuts: </p>
-      {shellQuickSortStrings.map((result, index) => (
+      <h4>Quick Sort 3 Method : </h4>
+      <p>quick sort 3 Method Resuts: </p>
+      {quickSortStrings3.map((result, index) => (
+        <li key={index}>{result} ms</li>
+      ))}
+      <h4>Quick Sort Insertion Method : </h4>
+      <p>quick Sort Insertion Method Resuts: </p>
+      {quickSortInsertionStrings.map((result, index) => (
+        <li key={index}>{result} ms</li>
+      ))}
+      <h4>Shell Sort Method : </h4>
+      <p>shell sort Method Resuts: </p>
+      {shellSortStrings.map((result, index) => (
+        <li key={index}>{result} ms</li>
+      ))}
+      <h4>Shell Sort 2 Method : </h4>
+      <p>shell sort 2 Method Resuts: </p>
+      {shellSortStrings2.map((result, index) => (
         <li key={index}>{result} ms</li>
       ))}
     </div>
